@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
+import Login from './pages/Login';
 import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import DailyUpdates from './pages/DailyUpdates';
+import Labour from './pages/Labour';
 import Workers from './pages/Workers';
 import Payments from './pages/Payments';
 import Inventory from './pages/Inventory';
@@ -16,10 +18,12 @@ function App() {
       <div className="flex flex-col md:flex-row min-h-screen">
         <MobileNav />
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Index />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/updates" element={<DailyUpdates />} />
+          <Route path="/labour" element={<Labour />} />
           <Route path="/workers" element={<Workers />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/inventory" element={<Inventory />} />
