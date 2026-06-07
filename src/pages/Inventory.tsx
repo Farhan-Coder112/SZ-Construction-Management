@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import Modal from '../components/Modal';
+import InventoryForm from '../components/InventoryForm';
 import { Plus, Search, Filter, Package, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const Inventory = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const inventoryItems = [
     { id: 'INV-001', name: 'Cement (50kg)', category: 'Materials', stock: 450, unit: 'Bags', status: 'In Stock' },
     { id: 'INV-002', name: 'Steel Rods (12mm)', category: 'Materials', stock: 120, unit: 'Tons', status: 'Low Stock' },
@@ -19,7 +23,10 @@ const Inventory = () => {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="flex justify-between items-start mb-6">
           <Header title="Inventory Management" subtitle="Track materials and equipment stock" />
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm"
+          >
             <Plus size={20} />
             <span>Add Item</span>
           </button>
@@ -121,6 +128,17 @@ const Inventory = () => {
             </table>
           </div>
         </div>
+
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          title="Add Inventory Item"
+        >
+          <InventoryForm 
+            onSubmit={() => setIsModalOpen(false)} 
+            onCancel={() => setIsModalOpen(false)} 
+          />
+        </Modal>
       </main>
     </div>
   );

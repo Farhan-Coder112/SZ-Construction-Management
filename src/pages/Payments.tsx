@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { Wallet, ArrowUpRight, ArrowDownLeft, MoreVertical, Download } from 'lucide-react';
+import Modal from '../components/Modal';
+import PaymentForm from '../components/PaymentForm';
+import { Wallet, ArrowUpRight, ArrowDownLeft, MoreVertical, Download, Plus } from 'lucide-react';
 
 const Payments = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const transactions = [
     { id: 'TXN-001', project: 'City Center Mall', type: 'Income', amount: '$12,500', date: 'Oct 12, 2024', status: 'Completed' },
     { id: 'TXN-002', project: 'Skyline Apartments', type: 'Expense', amount: '$4,200', date: 'Oct 11, 2024', status: 'Pending' },
@@ -16,7 +20,16 @@ const Payments = () => {
     <div className="flex h-screen bg-slate-50">
       <Sidebar />
       <main className="flex-1 overflow-y-auto p-8">
-        <Header title="Payments & Financials" subtitle="Track project budgets and transactions" />
+        <div className="flex justify-between items-start mb-6">
+          <Header title="Payments & Financials" subtitle="Track project budgets and transactions" />
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            <Plus size={20} />
+            <span>New Transaction</span>
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-blue-600 text-white p-6 rounded-xl shadow-sm">
@@ -107,6 +120,17 @@ const Payments = () => {
             </table>
           </div>
         </div>
+
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          title="Record New Transaction"
+        >
+          <PaymentForm 
+            onSubmit={() => setIsModalOpen(false)} 
+            onCancel={() => setIsModalOpen(false)} 
+          />
+        </Modal>
       </main>
     </div>
   );
