@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Projects from './pages/Projects';
+import ProjectDetails from './pages/ProjectDetails';
+import DailyUpdates from './pages/DailyUpdates';
 import Workers from './pages/Workers';
 import Payments from './pages/Payments';
 import Inventory from './pages/Inventory';
@@ -16,6 +18,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/updates" element={<DailyUpdates />} />
           <Route path="/workers" element={<Workers />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/inventory" element={<Inventory />} />

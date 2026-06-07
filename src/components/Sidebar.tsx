@@ -7,7 +7,8 @@ import {
   Wallet, 
   Package, 
   FileText, 
-  Settings 
+  Settings,
+  MessageSquare
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -16,6 +17,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: HardHat, label: 'Projects', path: '/projects' },
+    { icon: MessageSquare, label: 'Daily Updates', path: '/updates' },
     { icon: Users, label: 'Workers', path: '/workers' },
     { icon: Wallet, label: 'Payments', path: '/payments' },
     { icon: Package, label: 'Inventory', path: '/inventory' },
