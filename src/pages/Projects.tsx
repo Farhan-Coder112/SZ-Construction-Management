@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import ProjectCard from '../components/ProjectCard';
+import Modal from '../components/Modal';
+import ProjectForm from '../components/ProjectForm';
 import { Plus } from 'lucide-react';
 
 const Projects = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const projects = [
     { name: 'City Center Mall', location: 'Downtown, NY', status: 'On Track', progress: 65, dueDate: 'Dec 2024' },
     { name: 'Skyline Apartments', location: 'Brooklyn, NY', status: 'Delayed', progress: 30, dueDate: 'Mar 2025' },
@@ -20,7 +24,10 @@ const Projects = () => {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="flex justify-between items-start">
           <Header title="Projects" subtitle="Manage and track all construction projects" />
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm"
+          >
             <Plus size={20} />
             <span>New Project</span>
           </button>
@@ -31,6 +38,17 @@ const Projects = () => {
             <ProjectCard key={index} {...project as any} />
           ))}
         </div>
+
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          title="Create New Project"
+        >
+          <ProjectForm 
+            onSubmit={() => setIsModalOpen(false)} 
+            onCancel={() => setIsModalOpen(false)} 
+          />
+        </Modal>
       </main>
     </div>
   );
