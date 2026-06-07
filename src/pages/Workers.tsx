@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import WorkerCard from '../components/WorkerCard';
+import Modal from '../components/Modal';
+import WorkerForm from '../components/WorkerForm';
 import { Plus, Search, Filter } from 'lucide-react';
 
 const Workers = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const workers = [
     { name: 'John Doe', role: 'Site Supervisor', phone: '+1 234 567 890', location: 'Brooklyn, NY', status: 'Active', rating: 4.8 },
     { name: 'Robert Smith', role: 'Senior Mason', phone: '+1 234 567 891', location: 'Queens, NY', status: 'Active', rating: 4.5 },
@@ -20,7 +24,10 @@ const Workers = () => {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="flex justify-between items-start mb-6">
           <Header title="Workers" subtitle="Manage your workforce and assignments" />
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm"
+          >
             <Plus size={20} />
             <span>Add Worker</span>
           </button>
@@ -46,6 +53,17 @@ const Workers = () => {
             <WorkerCard key={index} {...worker as any} />
           ))}
         </div>
+
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          title="Add New Worker"
+        >
+          <WorkerForm 
+            onSubmit={() => setIsModalOpen(false)} 
+            onCancel={() => setIsModalOpen(false)} 
+          />
+        </Modal>
       </main>
     </div>
   );

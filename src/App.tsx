@@ -6,6 +6,7 @@ import ProjectDetails from './pages/ProjectDetails';
 import DailyUpdates from './pages/DailyUpdates';
 import Labour from './pages/Labour';
 import Workers from './pages/Workers';
+import Expenses from './pages/Expenses';
 import Payments from './pages/Payments';
 import Inventory from './pages/Inventory';
 import Reports from './pages/Reports';
@@ -25,6 +26,7 @@ function App() {
           <Route path="/updates" element={<DailyUpdates />} />
           <Route path="/labour" element={<Labour />} />
           <Route path="/workers" element={<Workers />} />
+          <Route path="/expenses" element={<Expenses />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/reports" element={<Reports />} />

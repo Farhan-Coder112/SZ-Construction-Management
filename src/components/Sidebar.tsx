@@ -9,7 +9,8 @@ import {
   FileText, 
   Settings,
   MessageSquare,
-  ClipboardCheck
+  ClipboardCheck,
+  Receipt
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -21,6 +22,7 @@ const Sidebar = () => {
     { icon: MessageSquare, label: 'Daily Updates', path: '/updates' },
     { icon: ClipboardCheck, label: 'Labour Tracking', path: '/labour' },
     { icon: Users, label: 'Workers', path: '/workers' },
+    { icon: Receipt, label: 'Expenses', path: '/expenses' },
     { icon: Wallet, label: 'Payments', path: '/payments' },
     { icon: Package, label: 'Inventory', path: '/inventory' },
     { icon: FileText, label: 'Reports', path: '/reports' },
