@@ -57,6 +57,10 @@ dependencies:
   flutter_svg: ^2.0.10
   google_fonts: ^6.2.1
   
+  # Notifications
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+  
   # HTTP
   http: ^1.2.0
 

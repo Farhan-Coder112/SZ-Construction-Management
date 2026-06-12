@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -19,9 +20,23 @@ class NotificationService {
 
     tz_data.initializeTimeZones();
     
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings();
-    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    // Platform-specific initialization settings
+    InitializationSettings initSettings;
+    
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      // Windows initialization (we can use Linux as fallback or just minimal settings)
+      const windowsSettings = LinuxInitializationSettings(defaultActionName: 'Open');
+      initSettings = const InitializationSettings(linux: windowsSettings);
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      initSettings = const InitializationSettings(android: androidSettings);
+    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+      const iosSettings = DarwinInitializationSettings();
+      initSettings = const InitializationSettings(iOS: iosSettings, macOS: iosSettings);
+    } else {
+      // Default/other platforms
+      initSettings = const InitializationSettings();
+    }
 
     await _notifications.initialize(
       initSettings,
@@ -37,7 +52,7 @@ class NotificationService {
     
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       String? token = await _messaging.getToken();
-      print('FCM Token: $token');
+      debugPrint('FCM Token: $token');
       
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessageTap);
@@ -68,23 +83,33 @@ class NotificationService {
     required String body,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'sz_construction_channel',
-      'SZ Construction Notifications',
-      channelDescription: 'Notifications for SZ Construction Management',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    // Platform-specific notification details
+    NotificationDetails details;
     
-    const iosDetails = DarwinNotificationDetails();
-    
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      const windowsDetails = LinuxNotificationDetails();
+      details = const NotificationDetails(linux: windowsDetails);
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      const androidDetails = AndroidNotificationDetails(
+        'sz_construction_channel',
+        'SZ Construction Notifications',
+        channelDescription: 'Notifications for SZ Construction Management',
+        importance: Importance.high,
+        priority: Priority.high,
+      );
+      details = const NotificationDetails(android: androidDetails);
+    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+      const iosDetails = DarwinNotificationDetails();
+      details = const NotificationDetails(iOS: iosDetails);
+    } else {
+      details = const NotificationDetails();
+    }
     
     await _notifications.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
       body,
-      details: details,
+      details,
       payload: payload,
     );
   }
@@ -95,17 +120,27 @@ class NotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'sz_construction_channel',
-      'SZ Construction Notifications',
-      channelDescription: 'Notifications for SZ Construction Management',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    // Platform-specific notification details
+    NotificationDetails details;
     
-    const iosDetails = DarwinNotificationDetails();
-    
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      const windowsDetails = LinuxNotificationDetails();
+      details = const NotificationDetails(linux: windowsDetails);
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      const androidDetails = AndroidNotificationDetails(
+        'sz_construction_channel',
+        'SZ Construction Notifications',
+        channelDescription: 'Notifications for SZ Construction Management',
+        importance: Importance.high,
+        priority: Priority.high,
+      );
+      details = const NotificationDetails(android: androidDetails);
+    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+      const iosDetails = DarwinNotificationDetails();
+      details = const NotificationDetails(iOS: iosDetails);
+    } else {
+      details = const NotificationDetails();
+    }
     
     await _notifications.zonedSchedule(
       scheduledTime.millisecondsSinceEpoch ~/ 1000,
