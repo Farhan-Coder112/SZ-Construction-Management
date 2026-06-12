@@ -18,44 +18,54 @@ class NotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    tz_data.initializeTimeZones();
-    
-    // Platform-specific initialization settings
-    InitializationSettings initSettings;
-    
-    if (defaultTargetPlatform == TargetPlatform.windows) {
-      // Windows initialization (we can use Linux as fallback or just minimal settings)
-      const windowsSettings = LinuxInitializationSettings(defaultActionName: 'Open');
-      initSettings = const InitializationSettings(linux: windowsSettings);
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-      initSettings = const InitializationSettings(android: androidSettings);
-    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-      const iosSettings = DarwinInitializationSettings();
-      initSettings = const InitializationSettings(iOS: iosSettings, macOS: iosSettings);
-    } else {
-      // Default/other platforms
-      initSettings = const InitializationSettings();
+    try {
+      tz_data.initializeTimeZones();
+      
+      // Platform-specific initialization settings
+      InitializationSettings initSettings;
+      
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        // Windows initialization (we can use Linux as fallback or just minimal settings)
+        const windowsSettings = LinuxInitializationSettings(defaultActionName: 'Open');
+        initSettings = const InitializationSettings(linux: windowsSettings);
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+        initSettings = const InitializationSettings(android: androidSettings);
+      } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+        const iosSettings = DarwinInitializationSettings();
+        initSettings = const InitializationSettings(iOS: iosSettings, macOS: iosSettings);
+      } else {
+        // Default/other platforms
+        initSettings = const InitializationSettings();
+      }
+
+      await _notifications.initialize(
+        initSettings,
+        onDidReceiveNotificationResponse: _onNotificationTap,
+      );
+
+      await _setupFirebaseMessaging();
+      _initialized = true;
+    } catch (e) {
+      debugPrint('Error initializing notification service: $e');
+      // Mark as initialized anyway to avoid retrying and failing repeatedly
+      _initialized = true;
     }
-
-    await _notifications.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse: _onNotificationTap,
-    );
-
-    await _setupFirebaseMessaging();
-    _initialized = true;
   }
 
   Future<void> _setupFirebaseMessaging() async {
-    NotificationSettings settings = await _messaging.requestPermission();
-    
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      String? token = await _messaging.getToken();
-      debugPrint('FCM Token: $token');
+    try {
+      NotificationSettings settings = await _messaging.requestPermission();
       
-      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessageTap);
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        String? token = await _messaging.getToken();
+        debugPrint('FCM Token: $token');
+        
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+        FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessageTap);
+      }
+    } catch (e) {
+      debugPrint('Error setting up Firebase Messaging: $e');
     }
   }
 
