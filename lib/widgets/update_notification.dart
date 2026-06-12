@@ -40,9 +40,23 @@ class _UpdateNotificationState extends State<UpdateNotification> {
     
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Update downloaded successfully'),
+        SnackBar(
+          content: const Text('Update downloaded successfully! Installing...'),
           backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      
+      // Install the update
+      final filePath = _updateService.downloadedFilePath;
+      if (filePath != null) {
+        await _updateService.installUpdate(filePath);
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to download update'),
+          backgroundColor: AppColors.error,
         ),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
@@ -55,46 +56,48 @@ class AuthProvider extends ChangeNotifier {
 
     final trimmedEmail = email.trim().toLowerCase();
     
-    // Demo account bypass check - allows instant sign-in without Firebase configuration
-    if (trimmedEmail == 'admin@szgroup.com' && (password == 'admin123' || password == 'admin')) {
-      _currentUser = UserModel(
-        id: 'offline_admin',
-        name: 'SZ Admin (Offline)',
-        email: 'admin@szgroup.com',
-        role: UserRole.admin,
-        phone: '+91 99999 99999',
-        createdAt: DateTime.now(),
-        isActive: true,
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } else if (trimmedEmail == 'manager@szgroup.com' && (password == 'manager123' || password == 'manager')) {
-      _currentUser = UserModel(
-        id: 'offline_manager',
-        name: 'SZ Manager (Offline)',
-        email: 'manager@szgroup.com',
-        role: UserRole.manager,
-        phone: '+91 88888 88888',
-        createdAt: DateTime.now(),
-        isActive: true,
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } else if (trimmedEmail == 'employee@szgroup.com' && (password == 'employee123' || password == 'employee')) {
-      _currentUser = UserModel(
-        id: 'offline_employee',
-        name: 'SZ Employee (Offline)',
-        email: 'employee@szgroup.com',
-        role: UserRole.employee,
-        phone: '+91 77777 77777',
-        createdAt: DateTime.now(),
-        isActive: true,
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
+    // Demo account bypass - only available in debug mode
+    if (kDebugMode) {
+      if (trimmedEmail == 'admin@szgroup.com' && (password == 'admin123' || password == 'admin')) {
+        _currentUser = UserModel(
+          id: 'offline_admin',
+          name: 'SZ Admin (Offline)',
+          email: 'admin@szgroup.com',
+          role: UserRole.admin,
+          phone: '+91 99999 99999',
+          createdAt: DateTime.now(),
+          isActive: true,
+        );
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else if (trimmedEmail == 'manager@szgroup.com' && (password == 'manager123' || password == 'manager')) {
+        _currentUser = UserModel(
+          id: 'offline_manager',
+          name: 'SZ Manager (Offline)',
+          email: 'manager@szgroup.com',
+          role: UserRole.manager,
+          phone: '+91 88888 88888',
+          createdAt: DateTime.now(),
+          isActive: true,
+        );
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else if (trimmedEmail == 'employee@szgroup.com' && (password == 'employee123' || password == 'employee')) {
+        _currentUser = UserModel(
+          id: 'offline_employee',
+          name: 'SZ Employee (Offline)',
+          email: 'employee@szgroup.com',
+          role: UserRole.employee,
+          phone: '+91 77777 77777',
+          createdAt: DateTime.now(),
+          isActive: true,
+        );
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
     }
 
     // Check if Firebase is using default placeholder options
@@ -105,8 +108,8 @@ class AuthProvider extends ChangeNotifier {
       isPlaceholder = true;
     }
 
-    if (isPlaceholder) {
-      // If Firebase is not configured, automatically log in as Admin for demo purposes
+    if (isPlaceholder && kDebugMode) {
+      // If Firebase is not configured, automatically log in as Admin for demo purposes (only in debug mode)
       _currentUser = UserModel(
         id: 'offline_fallback',
         name: 'Demo Admin (Offline)',

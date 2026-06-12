@@ -72,14 +72,28 @@ class UpdateService {
 
   Future<bool> downloadUpdate(String url, Function(double) onProgress) async {
     try {
-      final response = await http.get(Uri.parse(url));
+      final request = http.Request('GET', Uri.parse(url));
+      final response = await http.Client().send(request);
       
       if (response.statusCode == 200) {
         final appDir = await getApplicationDocumentsDirectory();
         final filePath = path.join(appDir.path, 'update_setup.exe');
         final file = File(filePath);
         
-        await file.writeAsBytes(response.bodyBytes);
+        final totalBytes = response.contentLength ?? 0;
+        int receivedBytes = 0;
+        final bytes = <int>[];
+        
+        await for (final chunk in response.stream) {
+          bytes.addAll(chunk);
+          receivedBytes += chunk.length;
+          if (totalBytes > 0) {
+            onProgress(receivedBytes / totalBytes);
+          }
+        }
+        
+        await file.writeAsBytes(bytes);
+        _downloadedFilePath = filePath;
         return true;
       }
     } catch (e) {
@@ -87,6 +101,9 @@ class UpdateService {
     }
     return false;
   }
+
+  String? _downloadedFilePath;
+  String? get downloadedFilePath => _downloadedFilePath;
 
   Future<bool> installUpdate(String filePath) async {
     try {

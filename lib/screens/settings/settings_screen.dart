@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/export_service.dart';
+import '../../services/update_service.dart';
 import '../../widgets/app_shell.dart';
 import '../../widgets/glass_card.dart';
 import '../../themes/app_colors.dart';
@@ -112,14 +113,34 @@ class SettingsScreen extends StatelessWidget {
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () async {
-                // Check for updates via Firebase Remote Config
+                final updateService = UpdateService.instance;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Checking for updates...'), duration: Duration(seconds: 2)),
                 );
-                await Future.delayed(const Duration(seconds: 2));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('You are on the latest version!'), backgroundColor: Colors.green),
-                );
+                
+                final hasUpdate = await updateService.checkForUpdates();
+                
+                if (context.mounted) {
+                  if (hasUpdate) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Update available: v${updateService.latestVersion}'),
+                        backgroundColor: AppColors.primaryPurple,
+                        duration: const Duration(seconds: 4),
+                      ),
+                    );
+                    // Navigate to dashboard to show update notification
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppConstants.kDashboardRoute,
+                      (route) => false,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You are on the latest version!'), backgroundColor: Colors.green),
+                    );
+                  }
+                }
               },
               icon: const Icon(Icons.system_update_outlined, size: 18),
               label: const Text('Check for Updates'),
